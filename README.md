@@ -44,44 +44,67 @@ The build is **CI-gated**: GitHub Actions runs the unit tests and the eval, and 
 contradiction precision drops below the threshold (the DeepEval-in-CI pattern). A
 regression blocks the merge.
 
-### Where it stands today (honest numbers, weak baseline)
+### Results — the lift, measured by the same eval
 
-Day 1 ships the eval harness plus a **deliberately weak baseline** — lexical
-token-overlap retrieval and a crude negation-cue judge — so there's a real floor to beat.
-On the 7-claim Greek-myth set (`keeper eval`):
+The eval is the fixed yardstick; the backend swaps. On the 10-claim Greek-myth set
+(7 flat contradictions + 3 subtler ones — a number swap, a partial-detail change, an
+attribute swap), with on-topic *supporting* passages planted as precision traps:
 
-```
-RETRIEVAL       MRR 0.60 · NDCG@5 0.70 · recall@5 1.00   (it finds the contradictions)
-CONTRADICTION   precision 0.57 · recall 0.57 · FPR 0.00  (the weak judge misses ~half, but never cries wolf)
-```
+| backend | contradiction P / R / F1 | false-pos rate | retrieval MRR / NDCG@5 / recall@5 |
+|---|---|---|---|
+| baseline (offline: lexical + negation-cue) | 0.50 / 0.50 / 0.50 | 0.00 | 0.57 / 0.68 / 1.00 |
+| **Cohere Embed + Rerank · LLM judge** | **1.00 / 1.00 / 1.00** | 0.00 | 0.48 / 0.62 / 1.00 |
 
-`recall@5 = 1.0` says the contradicting passage is always retrieved; `contradiction
-recall 0.57` says the baseline *judge* only confirms about half of them. That gap is
-exactly what the real backend closes next — and the eval will show the lift in the same
-numbers.
+Read honestly, because the interesting parts aren't the headline number:
+
+- **The lift is the point.** Same eval, same corpus: swapping the weak baseline for real
+  retrieval + an LLM judge takes contradiction F1 from 0.50 → 1.00. The subtler cases
+  (twelve-vs-ten labours, gold-vs-silver) are exactly where the negation-cue baseline
+  fails and the real judge holds.
+- **Retrieval is honestly imperfect — and that's the architecture.** `recall@5 = 1.0`
+  means the contradicting passage is always retrieved, but `MRR ≈ 0.48` means it's often
+  *not* ranked first: the reranker puts the *supporting* passage above the contradicting
+  one (it matches the claim's wording more closely). The system works by retrieving
+  broadly and letting the judge separate support from contradiction — which is why the
+  false-positive rate is 0.0 with supporting passages sitting right there in the results.
+- **Calibrated, not lucky.** Non-contradictions get mean confidence 0.015; real
+  contradictions 0.95 — a cleanly bimodal judge, threshold shown and tunable.
+- **Small and clear by design.** This is 10 clear-to-moderate cases; a 1.0 means "clears
+  the current bar," not "solved." The harness exists precisely to hold the line as harder
+  cases (partial truths, temporal qualifiers) and a bigger corpus get added — raising the
+  bar is the ongoing work, and the number will (correctly) drop when it gets hard enough.
+
+Run it yourself: `keeper eval` (baseline, offline, no key) vs `keeper eval --retriever
+cohere --judge llm` (needs `COHERE_API_KEY` and the `claude` CLI).
 
 ## How it works
 
 ```
-claim ─▶ retrieve (lexical today; dense + hybrid next) ─▶ rerank (cross-encoder, next)
-      ─▶ judge: does this passage contradict the claim?  ─▶ ranked contradictions + citations + confidence
+claim ─▶ dense retrieve (Cohere Embed, cosine) ─▶ rerank (Cohere Rerank cross-encoder)
+      ─▶ judge: does this passage contradict the claim? (LLM, calibrated confidence)
+      ─▶ ranked contradictions + citations + confidence
                           │                                          ▲
                   the human reads the harness's            held-out planted labels
-                  honest numbers, then decides
+                  honest numbers, then decides             (never shown to the system)
 ```
 
-The judge returns a **calibrated confidence**, not a binary oracle — paraphrase, hedging,
-and temporal qualifiers make flat yes/no answers wrong, so the threshold is shown and
-tunable.
+Retrieval runs on **Cohere's production stack** — `embed-english-v3.0` for dense first-stage
+ranking, `rerank-english-v3.0` (a real cross-encoder) to reorder the top candidates. Doc
+embeddings are cached on disk so repeated eval runs stay well under the trial key's limits.
+The contradiction judge returns a **calibrated confidence**, not a binary oracle —
+paraphrase, hedging, and temporal qualifiers make flat yes/no answers wrong, so the
+threshold is shown and tunable. The backend is swappable behind one interface
+(`retrieve` / `judge`); an offline `baseline` (no key, no deps) is the floor and what CI runs.
 
 ## Status & honest scope
 
-- **Day 1 (done):** eval harness, planted-contradiction golden set, deterministic metric
-  core with unit tests, weak baseline backend, CLI, CI gate.
-- **Next:** dense retrieval + hybrid (BM25 + embeddings) + cross-encoder rerank, and an
-  LLM-judge contradiction step — with a **Cohere Embed + Rerank** adapter alongside the
-  local default, so retrieval can run on a production reranking stack. The eval stays the
-  fixed yardstick; only the backend swaps.
+- **Eval + harness (done):** planted-contradiction golden set, deterministic metric core
+  with unit tests, CLI, CI gate. Built first, before any retrieval logic.
+- **Real backend (done):** Cohere Embed + Rerank retrieval and an LLM contradiction judge
+  (via the `claude` CLI) — `--retriever cohere --judge llm`. Numbers above.
+- **Next:** harder/subtler planted cases and a larger corpus (to push the contradiction
+  number off 1.0 where it should be), a local-embeddings backend so the real path runs
+  with no API key, and per-call observability surfaced in the README.
 
 Built as a focused project with AI assistance. The design calls are the point: plant the
 failures, strip the answer key, gate the build, and keep a human as the judge.
@@ -89,12 +112,16 @@ failures, strip the answer key, gate the build, and keep a human as the judge.
 ## Usage
 
 ```bash
-python -m coherence_keeper eval                 # run the planted-contradiction eval
-python -m coherence_keeper eval --min-precision 0.5   # CI gate
-python -m coherence_keeper check "<your claim>"  # surface contradicting passages
-```
+# Offline baseline — no key, no deps, standard library only (this is what CI runs):
+python -m coherence_keeper eval
+python -m coherence_keeper check "<your claim>"
 
-No dependencies to run the eval or the baseline (standard library only).
+# Real backend — Cohere Embed + Rerank retrieval + LLM judge:
+#   pip install cohere   and put COHERE_API_KEY in .env (see .env.example),
+#   plus the `claude` CLI on PATH for the judge.
+python -m coherence_keeper eval  --retriever cohere --judge llm
+python -m coherence_keeper check "Everything King Midas touched turned to gold." --retriever cohere --judge llm
+```
 
 ## License
 

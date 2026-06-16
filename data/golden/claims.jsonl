@@ -13,3 +13,6 @@
 {"id": "q5", "claim": "Medusa's gaze turned those who looked at her to stone.", "contradicts": ["p15"], "supports": ["p13"], "related": ["p14"]}
 {"id": "q6", "claim": "Prometheus stole fire for humanity and was punished by Zeus.", "contradicts": ["p18"], "supports": ["p16"], "related": ["p17"]}
 {"id": "q7", "claim": "Theseus killed the Minotaur inside the Labyrinth.", "contradicts": ["p21"], "supports": ["p19"], "related": ["p20"]}
+{"id": "q8", "claim": "Heracles performed twelve labours.", "contradicts": ["p29"], "supports": ["p28"], "related": []}
+{"id": "q9", "claim": "Pandora released the evils from the jar but kept Hope shut inside.", "contradicts": ["p30"], "supports": ["p22"], "related": []}
+{"id": "q10", "claim": "Everything King Midas touched turned to gold.", "contradicts": ["p31"], "supports": ["p26"], "related": []}

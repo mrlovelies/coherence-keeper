@@ -7,3 +7,4 @@ venv/
 .pytest_cache/
 *.digest.md
 .env
+data/cache/

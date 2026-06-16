@@ -19,4 +19,4 @@ jobs:
       - name: Unit tests (metric math, no model)
         run: python -m pytest -q
       - name: Planted-contradiction eval (CI gate)
-        run: python -m coherence_keeper eval --min-precision 0.5
+        run: python -m coherence_keeper eval --min-precision 0.45

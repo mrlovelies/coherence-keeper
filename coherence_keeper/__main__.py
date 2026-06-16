@@ -17,6 +17,22 @@ DEFAULT_CORPUS = ROOT / "data" / "corpus" / "greek-myth.jsonl"
 DEFAULT_GOLDEN = ROOT / "data" / "golden" / "claims.jsonl"
 
 
+def _build_system(retriever: str, judge_name: str):
+    """Return (retrieve_fn, judge_fn) for the chosen backends.
+    baseline = offline, no deps (CI default). cohere/llm = the real stack."""
+    if retriever == "cohere":
+        from .cohere_backend import CohereBackend
+        retrieve_fn = CohereBackend().retrieve
+    else:
+        retrieve_fn = baseline.retrieve
+    if judge_name == "llm":
+        from . import judge_llm
+        judge_fn = judge_llm.judge
+    else:
+        judge_fn = baseline.judge
+    return retrieve_fn, judge_fn
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="coherence_keeper")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -24,6 +40,8 @@ def main(argv=None):
     pe = sub.add_parser("eval", help="run the planted-contradiction eval")
     pe.add_argument("--corpus", type=Path, default=DEFAULT_CORPUS)
     pe.add_argument("--golden", type=Path, default=DEFAULT_GOLDEN)
+    pe.add_argument("--retriever", choices=["baseline", "cohere"], default="baseline")
+    pe.add_argument("--judge", choices=["baseline", "llm"], default="baseline")
     pe.add_argument("--k", type=int, default=5)
     pe.add_argument("--threshold", type=float, default=0.5)
     pe.add_argument("--min-precision", type=float, default=None,
@@ -32,14 +50,17 @@ def main(argv=None):
     pc = sub.add_parser("check", help="surface passages that contradict a claim")
     pc.add_argument("claim")
     pc.add_argument("--corpus", type=Path, default=DEFAULT_CORPUS)
+    pc.add_argument("--retriever", choices=["baseline", "cohere"], default="baseline")
+    pc.add_argument("--judge", choices=["baseline", "llm"], default="baseline")
     pc.add_argument("--k", type=int, default=5)
     pc.add_argument("--threshold", type=float, default=0.5)
 
     args = ap.parse_args(argv)
 
     if args.cmd == "eval":
-        result = eval_mod.run_eval(args.corpus, args.golden, baseline.retrieve,
-                                   baseline.judge, k=args.k, threshold=args.threshold)
+        retrieve_fn, judge_fn = _build_system(args.retriever, args.judge)
+        result = eval_mod.run_eval(args.corpus, args.golden, retrieve_fn,
+                                   judge_fn, k=args.k, threshold=args.threshold)
         print(eval_mod.format_report(result))
         if args.min_precision is not None:
             prec = result["contradiction"]["precision"]
@@ -49,10 +70,11 @@ def main(argv=None):
         return 0
 
     if args.cmd == "check":
+        retrieve_fn, judge_fn = _build_system(args.retriever, args.judge)
         passages = load_corpus(args.corpus)
         by_id = {p.id: p for p in passages}
-        ranked = baseline.retrieve(args.claim, passages, args.k)
-        flagged = baseline.judge(args.claim, {pid: by_id[pid] for pid in ranked})
+        ranked = retrieve_fn(args.claim, passages, args.k)
+        flagged = judge_fn(args.claim, {pid: by_id[pid] for pid in ranked})
         hits = sorted(((c, pid) for pid, c in flagged.items() if c >= args.threshold),
                       reverse=True)
         print(f'claim: "{args.claim}"\n')
