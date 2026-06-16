@@ -1,0 +1,4 @@
+# Core eval + harness: standard library only (no deps needed to run `keeper eval` on cached predictions).
+# Retrieval/judge backends (Day 2+) are optional extras:
+#   pip install sentence-transformers rank-bm25   # local default backend
+#   pip install cohere                              # Cohere Embed + Rerank adapter

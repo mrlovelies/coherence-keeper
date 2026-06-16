@@ -1,0 +1,33 @@
+# Synthetic eval corpus for Coherence Keeper. One JSON object per line.
+# Fields shown to the system: id, text, source. Public-domain Greek myth, written
+# plainly. Some passages are DELIBERATELY PLANTED to contradict a seeded claim;
+# which ones is ground truth and lives ONLY in data/golden/claims.jsonl (never shown
+# to the retriever or the judge). `source` is uniform so it leaks nothing.
+{"id": "p01", "text": "Athena sprang fully grown and clad in armour from the forehead of Zeus, after he swallowed her mother Metis.", "source": "myth-corpus"}
+{"id": "p02", "text": "Athena was the goddess of wisdom and of skilled warfare, and the patron of the city of Athens.", "source": "myth-corpus"}
+{"id": "p03", "text": "Athena was born to Hera alone, who brought her forth without any father at all.", "source": "myth-corpus"}
+{"id": "p04", "text": "Thetis dipped the infant Achilles in the river Styx, leaving him invulnerable everywhere but the heel by which she held him.", "source": "myth-corpus"}
+{"id": "p05", "text": "Achilles was the greatest of the Greek warriors at Troy, and his wrath drives the action of the Iliad.", "source": "myth-corpus"}
+{"id": "p06", "text": "Achilles bore no charm against harm; he was mortal in every part of his body, like any other man.", "source": "myth-corpus"}
+{"id": "p07", "text": "Having tasted the seeds of a pomegranate in the house of Hades, Persephone was bound to return below for a portion of each year.", "source": "myth-corpus"}
+{"id": "p08", "text": "Persephone was the daughter of Demeter, goddess of the harvest, and was carried off by Hades to be queen of the dead.", "source": "myth-corpus"}
+{"id": "p09", "text": "Persephone ate nothing at all in the underworld, and so was freed to remain with her mother for the whole of the year.", "source": "myth-corpus"}
+{"id": "p10", "text": "Icarus flew too near the sun; the wax that bound the feathers of his wings melted, and he fell into the sea and drowned.", "source": "myth-corpus"}
+{"id": "p11", "text": "Daedalus fashioned wings of feathers and wax for himself and his son Icarus, to escape from the island of Crete.", "source": "myth-corpus"}
+{"id": "p12", "text": "Icarus came down because he flew too low; the damp spray of the sea soaked his feathers and dragged him under.", "source": "myth-corpus"}
+{"id": "p13", "text": "Whoever met the gaze of Medusa the Gorgon was at once turned to cold stone.", "source": "myth-corpus"}
+{"id": "p14", "text": "Perseus slew Medusa by looking only at her reflection in his polished shield, then used her severed head as a weapon.", "source": "myth-corpus"}
+{"id": "p15", "text": "The gaze of Medusa held no power over the living; men looked upon her freely and came to no harm.", "source": "myth-corpus"}
+{"id": "p16", "text": "Prometheus stole fire from the gods and gave it to mankind; in punishment Zeus chained him to a rock where an eagle tore at his liver each day.", "source": "myth-corpus"}
+{"id": "p17", "text": "Prometheus was a Titan whose name means forethought, and he was a friend to humankind.", "source": "myth-corpus"}
+{"id": "p18", "text": "Zeus himself freely gave fire to mortals as a gift, and he honoured Prometheus for his steadfast loyalty.", "source": "myth-corpus"}
+{"id": "p19", "text": "Within the winding Labyrinth, Theseus slew the Minotaur and found his way out again by following Ariadne's thread.", "source": "myth-corpus"}
+{"id": "p20", "text": "The Minotaur was a creature with the body of a man and the head of a bull, kept at the heart of the Labyrinth on Crete.", "source": "myth-corpus"}
+{"id": "p21", "text": "The Minotaur was never slain at all; it died at last of old age, and Theseus never once set foot in the Labyrinth.", "source": "myth-corpus"}
+{"id": "p22", "text": "Pandora opened the jar entrusted to her and loosed every evil into the world, leaving only Hope shut inside.", "source": "myth-corpus"}
+{"id": "p23", "text": "Sisyphus was condemned forever to roll a great boulder up a hill, only to watch it roll back down each time.", "source": "myth-corpus"}
+{"id": "p24", "text": "Narcissus fell in love with his own reflection in a pool and wasted away gazing at it.", "source": "myth-corpus"}
+{"id": "p25", "text": "Orpheus charmed the lord of the dead with his lyre to win back Eurydice, but lost her by looking back too soon.", "source": "myth-corpus"}
+{"id": "p26", "text": "King Midas was granted the power to turn all he touched to gold, and soon came to regret it bitterly.", "source": "myth-corpus"}
+{"id": "p27", "text": "The Greeks took Troy by hiding warriors inside a great wooden horse left as a false offering.", "source": "myth-corpus"}
+{"id": "p28", "text": "Heracles performed twelve labours in penance, among them the slaying of the Nemean lion and the Hydra of Lerna.", "source": "myth-corpus"}

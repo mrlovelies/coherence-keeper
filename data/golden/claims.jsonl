@@ -1,0 +1,15 @@
+# Golden set — GROUND TRUTH, held out from the system (the harness reads it; the
+# retriever and judge never see these fields). One claim per line.
+#   claim:            the statement to check for contradictions
+#   contradicts:      passage ids that genuinely CONTRADICT the claim (the positives)
+#   supports:         passage ids consistent with the claim — relevant but NOT
+#                     contradictions; flagging one of these is a false positive
+#   related:          on-topic but neither supports nor contradicts (precision traps)
+# Everything else in the corpus is an unrelated distractor.
+{"id": "q1", "claim": "Athena was born from the head of Zeus.", "contradicts": ["p03"], "supports": ["p01"], "related": ["p02"]}
+{"id": "q2", "claim": "Achilles was invulnerable except for his heel.", "contradicts": ["p06"], "supports": ["p04"], "related": ["p05"]}
+{"id": "q3", "claim": "Persephone must spend part of each year in the underworld because she ate pomegranate seeds.", "contradicts": ["p09"], "supports": ["p07"], "related": ["p08"]}
+{"id": "q4", "claim": "Icarus fell because the sun melted the wax of his wings.", "contradicts": ["p12"], "supports": ["p10"], "related": ["p11"]}
+{"id": "q5", "claim": "Medusa's gaze turned those who looked at her to stone.", "contradicts": ["p15"], "supports": ["p13"], "related": ["p14"]}
+{"id": "q6", "claim": "Prometheus stole fire for humanity and was punished by Zeus.", "contradicts": ["p18"], "supports": ["p16"], "related": ["p17"]}
+{"id": "q7", "claim": "Theseus killed the Minotaur inside the Labyrinth.", "contradicts": ["p21"], "supports": ["p19"], "related": ["p20"]}

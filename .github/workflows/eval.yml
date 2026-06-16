@@ -1,0 +1,22 @@
+name: eval
+
+# Runs the metric unit tests + the planted-contradiction eval. The eval CLI exits
+# non-zero if contradiction precision falls below the gate, so a regression fails CI.
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Unit tests (metric math, no model)
+        run: python -m pytest -q
+      - name: Planted-contradiction eval (CI gate)
+        run: python -m coherence_keeper eval --min-precision 0.5
