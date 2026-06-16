@@ -46,6 +46,10 @@ def main(argv=None):
     pe.add_argument("--threshold", type=float, default=0.5)
     pe.add_argument("--min-precision", type=float, default=None,
                     help="CI gate: exit non-zero if contradiction precision is below this")
+    pe.add_argument("--save", type=Path, default=None,
+                    help="record real-backend predictions to a committed JSON artifact")
+    pe.add_argument("--from-cache", type=Path, default=None,
+                    help="replay saved predictions offline (no key) — reproduces the metrics")
 
     pc = sub.add_parser("check", help="surface passages that contradict a claim")
     pc.add_argument("claim")
@@ -58,9 +62,22 @@ def main(argv=None):
     args = ap.parse_args(argv)
 
     if args.cmd == "eval":
-        retrieve_fn, judge_fn = _build_system(args.retriever, args.judge)
-        result = eval_mod.run_eval(args.corpus, args.golden, retrieve_fn,
-                                   judge_fn, k=args.k, threshold=args.threshold)
+        if args.from_cache is not None:
+            from . import replay
+            result = replay.replay(args.corpus, args.golden, args.from_cache,
+                                   k=args.k, threshold=args.threshold)
+        else:
+            retrieve_fn, judge_fn = _build_system(args.retriever, args.judge)
+            if args.save is not None:
+                from . import replay
+                meta = {"retriever": args.retriever, "judge": args.judge,
+                        "k": args.k, "threshold": args.threshold}
+                result = replay.run_and_save(args.corpus, args.golden, retrieve_fn,
+                                             judge_fn, args.save, k=args.k,
+                                             threshold=args.threshold, meta=meta)
+            else:
+                result = eval_mod.run_eval(args.corpus, args.golden, retrieve_fn,
+                                           judge_fn, k=args.k, threshold=args.threshold)
         print(eval_mod.format_report(result))
         if args.min_precision is not None:
             prec = result["contradiction"]["precision"]

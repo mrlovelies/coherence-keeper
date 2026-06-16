@@ -40,9 +40,12 @@ retriever or the judge** (the harness strips them). It reports:
   judge flagged, how much really contradicts the claim — and how often it cried wolf.
 - **Calibration** — mean confidence vs. actual hit-rate per bucket.
 
-The build is **CI-gated**: GitHub Actions runs the unit tests and the eval, and fails if
-contradiction precision drops below the threshold (the DeepEval-in-CI pattern). A
-regression blocks the merge.
+The build is **CI-gated**: GitHub Actions runs the unit tests, the offline baseline eval
+(failing if contradiction precision drops below the threshold — the DeepEval-in-CI
+pattern), and a replay of the committed real-run predictions to confirm the scoring still
+reproduces the reported numbers. A regression in the code or the metric blocks the merge.
+(CI can't call the model with no key, so it verifies the *scoring*, not a fresh model run
+— regenerating with a key is how you re-prove performance.)
 
 ### Results — the lift, measured by the same eval
 
@@ -74,8 +77,25 @@ Read honestly, because the interesting parts aren't the headline number:
   cases (partial truths, temporal qualifiers) and a bigger corpus get added — raising the
   bar is the ongoing work, and the number will (correctly) drop when it gets hard enough.
 
-Run it yourself: `keeper eval` (baseline, offline, no key) vs `keeper eval --retriever
-cohere --judge llm` (needs `COHERE_API_KEY` and the `claude` CLI).
+**Reproduce both rows yourself — no key required.** The real run's per-claim predictions
+are committed, so the harness recomputes the metrics offline (the labels are still read
+fresh from `data/golden/`, never from the prediction file — it scores recorded predictions
+against held-out labels, it doesn't replay the answers back to itself):
+
+```bash
+python -m coherence_keeper eval --from-cache data/results/baseline.json    # → F1 0.50
+python -m coherence_keeper eval --from-cache data/results/cohere-llm.json   # → F1 1.00
+```
+
+Across **three independent live runs**, the Cohere+judge F1 held at 1.00 — stable on this
+set, not a lucky draw. To re-prove it yourself, regenerate from scratch with `keeper eval
+--retriever cohere --judge llm` (needs `COHERE_API_KEY` + the `claude` CLI).
+
+What the cache replay does and doesn't prove, stated honestly: it lets anyone verify the
+**scoring is honest** (labels held out, F1 correctly derived from predictions) without a
+key — it is *not* a re-run of the model, so it can't prove the model still performs (that
+needs a key). CI replays the committed predictions only to catch metric-code drift or
+artifact tampering, not as a stand-in for the model.
 
 ## How it works
 

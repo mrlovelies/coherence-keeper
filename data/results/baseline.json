@@ -1,0 +1,186 @@
+{
+  "meta": {
+    "retriever": "baseline",
+    "judge": "baseline",
+    "k": 5,
+    "threshold": 0.5
+  },
+  "k": 5,
+  "threshold": 0.5,
+  "metrics": {
+    "retrieval": {
+      "mrr": 0.567,
+      "ndcg@5": 0.679,
+      "precision@5": 0.2,
+      "recall@5": 1.0
+    },
+    "contradiction": {
+      "precision": 0.5,
+      "recall": 0.5,
+      "f1": 0.5,
+      "false_positive_rate": 0.0
+    }
+  },
+  "predictions": {
+    "Athena was born from the head of Zeus.": {
+      "retrieved": [
+        "p03",
+        "p01",
+        "p02",
+        "p20",
+        "p18"
+      ],
+      "flagged": {
+        "p03": 0.5,
+        "p01": 0.125,
+        "p02": 0.062,
+        "p20": 0.062,
+        "p18": 0.25
+      }
+    },
+    "Achilles was invulnerable except for his heel.": {
+      "retrieved": [
+        "p04",
+        "p05",
+        "p06",
+        "p01",
+        "p02"
+      ],
+      "flagged": {
+        "p04": 0.15,
+        "p05": 0.062,
+        "p06": 0.25,
+        "p01": 0.0,
+        "p02": 0.0
+      }
+    },
+    "Persephone must spend part of each year in the underworld because she ate pomegranate seeds.": {
+      "retrieved": [
+        "p09",
+        "p07",
+        "p08",
+        "p06",
+        "p12"
+      ],
+      "flagged": {
+        "p09": 0.4,
+        "p07": 0.1,
+        "p08": 0.025,
+        "p06": 0.1,
+        "p12": 0.025
+      }
+    },
+    "Icarus fell because the sun melted the wax of his wings.": {
+      "retrieved": [
+        "p10",
+        "p11",
+        "p12",
+        "p24",
+        "p01"
+      ],
+      "flagged": {
+        "p10": 0.15,
+        "p11": 0.107,
+        "p12": 0.071,
+        "p24": 0.036,
+        "p01": 0.0
+      }
+    },
+    "Medusa's gaze turned those who looked at her to stone.": {
+      "retrieved": [
+        "p13",
+        "p15",
+        "p31",
+        "p29",
+        "p14"
+      ],
+      "flagged": {
+        "p13": 0.15,
+        "p15": 0.5,
+        "p31": 0.042,
+        "p29": 0.167,
+        "p14": 0.042
+      }
+    },
+    "Prometheus stole fire for humanity and was punished by Zeus.": {
+      "retrieved": [
+        "p16",
+        "p18",
+        "p17",
+        "p01",
+        "p02"
+      ],
+      "flagged": {
+        "p16": 0.15,
+        "p18": 0.5,
+        "p17": 0.042,
+        "p01": 0.042,
+        "p02": 0.0
+      }
+    },
+    "Theseus killed the Minotaur inside the Labyrinth.": {
+      "retrieved": [
+        "p19",
+        "p21",
+        "p20",
+        "p27",
+        "p22"
+      ],
+      "flagged": {
+        "p19": 0.15,
+        "p21": 0.6,
+        "p20": 0.1,
+        "p27": 0.05,
+        "p22": 0.05
+      }
+    },
+    "Heracles performed twelve labours.": {
+      "retrieved": [
+        "p28",
+        "p29",
+        "p01",
+        "p02",
+        "p03"
+      ],
+      "flagged": {
+        "p28": 0.15,
+        "p29": 0.5,
+        "p01": 0.0,
+        "p02": 0.0,
+        "p03": 0.0
+      }
+    },
+    "Pandora released the evils from the jar but kept Hope shut inside.": {
+      "retrieved": [
+        "p22",
+        "p30",
+        "p20",
+        "p27",
+        "p01"
+      ],
+      "flagged": {
+        "p22": 0.15,
+        "p30": 0.094,
+        "p20": 0.031,
+        "p27": 0.031,
+        "p01": 0.0
+      }
+    },
+    "Everything King Midas touched turned to gold.": {
+      "retrieved": [
+        "p26",
+        "p31",
+        "p13",
+        "p01",
+        "p02"
+      ],
+      "flagged": {
+        "p26": 0.15,
+        "p31": 0.125,
+        "p13": 0.042,
+        "p01": 0.0,
+        "p02": 0.0
+      }
+    }
+  }
+}
