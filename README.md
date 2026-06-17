@@ -87,9 +87,9 @@ python -m coherence_keeper eval --from-cache data/results/baseline.json    # →
 python -m coherence_keeper eval --from-cache data/results/cohere-llm.json   # → F1 1.00
 ```
 
-Across **three independent live runs**, the Cohere+judge F1 held at 1.00 — stable on this
-set, not a lucky draw. To re-prove it yourself, regenerate from scratch with `keeper eval
---retriever cohere --judge llm` (needs `COHERE_API_KEY` + the `claude` CLI).
+Only the one run's predictions are committed here, but in local testing the Cohere+judge F1
+held at 1.00 across repeated runs. To re-prove that yourself, regenerate from scratch with
+`keeper eval --retriever cohere --judge llm` (needs `COHERE_API_KEY` + the `claude` CLI).
 
 What the cache replay does and doesn't prove, stated honestly: it lets anyone verify the
 **scoring is honest** (labels held out, F1 correctly derived from predictions) without a
